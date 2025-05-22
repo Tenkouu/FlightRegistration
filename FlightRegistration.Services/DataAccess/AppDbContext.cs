@@ -112,6 +112,24 @@ namespace FlightRegistration.Services.DataAccess
             // modelBuilder.Entity<Booking>().HasData(
             //    new Booking { Id = 1, FlightId = 1, PassengerId = 1, BookingTime = DateTime.UtcNow.AddDays(-10) } // Static time for BookingTime too!
             // );
+
+            modelBuilder.Entity<Passenger>().HasData(
+    new Passenger { Id = 1, PassportNumber = "P000001", FirstName = "Test", LastName = "PassengerA" },
+    new Passenger { Id = 2, PassportNumber = "P000002", FirstName = "Another", LastName = "UserB" }
+);
+
+            // Static booking times
+            var bookingTime1 = new DateTime(2024, 8, 1, 12, 0, 0, DateTimeKind.Utc);
+            var bookingTime2 = new DateTime(2024, 8, 2, 15, 0, 0, DateTimeKind.Utc);
+
+            modelBuilder.Entity<Booking>().HasData(
+                // Passenger 1 booked on Flight 1 (MG101), no seat assigned yet
+                new Booking { Id = 1, FlightId = 1, PassengerId = 1, BookingTime = bookingTime1, AssignedSeatId = null },
+                // Passenger 2 booked on Flight 1 (MG101), no seat assigned yet
+                new Booking { Id = 2, FlightId = 1, PassengerId = 2, BookingTime = bookingTime2, AssignedSeatId = null },
+                // Passenger 1 also booked on Flight 2 (MG202), no seat assigned yet
+                new Booking { Id = 3, FlightId = 2, PassengerId = 1, BookingTime = bookingTime1.AddDays(1), AssignedSeatId = null }
+            );
         }
     }
 }
