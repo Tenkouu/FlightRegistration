@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRegistration.WinForms
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRegistration.BlazorDisplay", "FlightRegistration.BlazorDisplay\FlightRegistration.BlazorDisplay.csproj", "{370B093E-3E5B-45DB-B673-27A36AB9470C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTcpClient", "SimpleTcpClient\SimpleTcpClient.csproj", "{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{370B093E-3E5B-45DB-B673-27A36AB9470C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{370B093E-3E5B-45DB-B673-27A36AB9470C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{370B093E-3E5B-45DB-B673-27A36AB9470C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

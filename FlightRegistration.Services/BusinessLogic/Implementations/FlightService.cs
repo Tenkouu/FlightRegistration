@@ -1,28 +1,34 @@
-﻿using FlightRegistration.Core.DTOs;
+﻿// File: FlightRegistration.Services/BusinessLogic/Implementations/FlightService.cs
+using FlightRegistration.Core.DTOs;
 using FlightRegistration.Core.Models;
 using FlightRegistration.Services.BusinessLogic.Interfaces;
+using FlightRegistration.Services.DataAccess.Interfaces;
 using FlightRegistration.Services.DataAccess;
-using FlightRegistration.Services.DataAccess.Interfaces; // To use IFlightRepository
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlightRegistration.Core.Interfaces; // <--- ENSURE THIS USING IS CORRECT
+using System; // For Console.WriteLine
 
 namespace FlightRegistration.Services.BusinessLogic.Implementations
 {
     public class FlightService : IFlightService
     {
         private readonly IFlightRepository _flightRepository;
-        private readonly AppDbContext _context; // For SaveChangesAsync
+        private readonly AppDbContext _context;
+        private readonly IAgentNotifier _agentNotifier; // Dependency on the interface
 
-        // We'll also need repositories for Seats, Bookings, Passengers later for more complex logic
-        // For now, FlightRepository is enough for basic flight operations.
-
-        public FlightService(IFlightRepository flightRepository, AppDbContext context)
+        public FlightService(
+            IFlightRepository flightRepository,
+            AppDbContext context,
+            IAgentNotifier agentNotifier) // Injected here
         {
             _flightRepository = flightRepository;
             _context = context;
+            _agentNotifier = agentNotifier; // Assigned here
         }
 
+        // ... (GetAllFlightsAsync and GetFlightDetailsByIdAsync methods from before) ...
         public async Task<IEnumerable<FlightDetailsDto>> GetAllFlightsAsync()
         {
             var flights = await _flightRepository.GetAllFlightsAsync();
@@ -35,19 +41,18 @@ namespace FlightRegistration.Services.BusinessLogic.Implementations
                 DepartureTime = f.DepartureTime,
                 ArrivalTime = f.ArrivalTime,
                 Status = f.Status,
-                Seats = f.Seats.Select(s => new SeatDto // Assuming Seats are loaded by GetAllFlightsAsync
+                Seats = f.Seats.Select(s => new SeatDto
                 {
                     Id = s.Id,
                     SeatNumber = s.SeatNumber,
                     IsReserved = s.IsReserved,
-                    // ReservedForPassengerName might require loading Booking -> Passenger
                 }).ToList()
             }).ToList();
         }
 
         public async Task<FlightDetailsDto?> GetFlightDetailsByIdAsync(int flightId)
         {
-            var flight = await _flightRepository.GetFlightByIdAsync(flightId); // Ensure GetFlightByIdAsync loads Seats
+            var flight = await _flightRepository.GetFlightByIdAsync(flightId);
             if (flight == null) return null;
 
             return new FlightDetailsDto
@@ -68,26 +73,26 @@ namespace FlightRegistration.Services.BusinessLogic.Implementations
             };
         }
 
+        // ... (UpdateFlightStatusAsync method from before, ensure it uses _agentNotifier) ...
         public async Task<bool> UpdateFlightStatusAsync(int flightId, FlightStatus newStatus)
         {
             var flight = await _flightRepository.GetFlightByIdAsync(flightId);
             if (flight == null)
             {
-                return false; // Flight not found
+                return false;
             }
 
             flight.Status = newStatus;
-            // _flightRepository.UpdateFlightAsync(flight); // The repository marks it as modified
-            // No need to call UpdateFlightAsync if GetFlightByIdAsync returns a tracked entity
-            // and you modify its properties. EF Core tracks changes.
+
             try
             {
-                await _context.SaveChangesAsync(); // Save changes to the database
+                await _context.SaveChangesAsync();
+                await _agentNotifier.NotifyFlightStatusChangedAsync(flight.Id, flight.Status, flight.FlightNumber);
                 return true;
             }
             catch (System.Exception ex)
             {
-                // Log the exception (ex)
+                Console.WriteLine($"Error in UpdateFlightStatusAsync: {ex.Message}"); // Log ex
                 return false;
             }
         }

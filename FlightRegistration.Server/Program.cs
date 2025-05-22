@@ -4,7 +4,11 @@ using FlightRegistration.Services.DataAccess.Interfaces; // For repository inter
 using FlightRegistration.Services.DataAccess.Repositories; // For repository implementations
 using FlightRegistration.Services.BusinessLogic.Interfaces; // For service interfaces
 using FlightRegistration.Services.BusinessLogic.Implementations; // For service implementations
-
+using FlightRegistration.Server.Services; // For AgentNotifier, IAgentNotifier
+using FlightRegistration.Server.Sockets;  // For AgentSocketServer
+using FlightRegistration.Core.Interfaces; // For IAgentNotifier
+using FlightRegistration.Server.Services; // For AgentNotifier (implementation)
+using FlightRegistration.Server.Sockets;  // For AgentSocketServer
 
 
 
@@ -45,6 +49,26 @@ builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 
 builder.Services.AddScoped<IFlightService, FlightService>();
 builder.Services.AddScoped<ICheckInService, CheckInService>();
+
+builder.Services.AddSingleton<AgentNotifier>(); // Concrete class for AgentSocketServer
+builder.Services.AddSingleton<IAgentNotifier>(sp => sp.GetRequiredService<AgentNotifier>()); // Interface for other services
+
+// Register AgentSocketServer as a Hosted Service
+builder.Services.AddHostedService<AgentSocketServer>();
+
+builder.Services.AddSingleton<AgentNotifier>();
+// Register IAgentNotifier (interface) to be resolved by the AgentNotifier implementation
+builder.Services.AddSingleton<IAgentNotifier>(sp => sp.GetRequiredService<AgentNotifier>());
+// --- END KEY PART ---
+
+// Register AgentSocketServer as a Hosted Service (ensure this is present)
+builder.Services.AddHostedService<AgentSocketServer>();
+
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 
 // builder.Services.AddScoped<ICheckInService, CheckInService>(); // You'll add this later
 // Later, you'll add SignalR and other services here
