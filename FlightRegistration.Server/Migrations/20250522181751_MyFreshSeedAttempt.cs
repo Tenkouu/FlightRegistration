@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace FlightRegistration.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class MyFreshSeedAttempt : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -98,6 +100,75 @@ namespace FlightRegistration.Server.Migrations
                         principalTable: "Seats",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Flights",
+                columns: new[] { "Id", "ArrivalCity", "ArrivalTime", "DepartureCity", "DepartureTime", "FlightNumber", "Status", "TotalSeats" },
+                values: new object[,]
+                {
+                    { 1, "TYO", new DateTime(2024, 10, 10, 15, 0, 0, 0, DateTimeKind.Utc), "UBN", new DateTime(2024, 10, 10, 10, 0, 0, 0, DateTimeKind.Utc), "MG101", 0, 6 },
+                    { 2, "UBN", new DateTime(2024, 10, 10, 18, 0, 0, 0, DateTimeKind.Utc), "SEL", new DateTime(2024, 10, 10, 14, 30, 0, 0, DateTimeKind.Utc), "MG202", 0, 4 },
+                    { 3, "FRA", new DateTime(2024, 10, 11, 18, 0, 0, 0, DateTimeKind.Utc), "UBN", new DateTime(2024, 10, 11, 8, 0, 0, 0, DateTimeKind.Utc), "MG303", 0, 8 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Passengers",
+                columns: new[] { "Id", "FirstName", "LastName", "PassportNumber" },
+                values: new object[,]
+                {
+                    { 1, "Alice", "Wonder", "P000001" },
+                    { 2, "Bob", "Builder", "P000002" },
+                    { 3, "Charlie", "Chaplin", "P000003" },
+                    { 4, "Diana", "Prince", "P000004" },
+                    { 5, "Edward", "Elric", "P000005" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Bookings",
+                columns: new[] { "Id", "AssignedSeatId", "BookingTime", "FlightId", "PassengerId" },
+                values: new object[,]
+                {
+                    { 1, null, new DateTime(2024, 9, 1, 10, 0, 0, 0, DateTimeKind.Utc), 1, 1 },
+                    { 3, null, new DateTime(2024, 9, 1, 12, 0, 0, 0, DateTimeKind.Utc), 1, 3 },
+                    { 4, null, new DateTime(2024, 9, 1, 13, 0, 0, 0, DateTimeKind.Utc), 2, 4 },
+                    { 6, null, new DateTime(2024, 9, 1, 15, 0, 0, 0, DateTimeKind.Utc), 3, 1 },
+                    { 8, null, new DateTime(2024, 9, 1, 17, 0, 0, 0, DateTimeKind.Utc), 3, 4 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Seats",
+                columns: new[] { "Id", "FlightId", "IsReserved", "SeatNumber" },
+                values: new object[,]
+                {
+                    { 1, 1, true, "1A" },
+                    { 2, 1, false, "1B" },
+                    { 3, 1, false, "1C" },
+                    { 4, 1, false, "2A" },
+                    { 5, 1, false, "2B" },
+                    { 6, 1, false, "2C" },
+                    { 7, 2, true, "1A" },
+                    { 8, 2, false, "1B" },
+                    { 9, 2, false, "2A" },
+                    { 10, 2, false, "2B" },
+                    { 11, 3, true, "1A" },
+                    { 12, 3, false, "1B" },
+                    { 13, 3, false, "1C" },
+                    { 14, 3, false, "1D" },
+                    { 15, 3, false, "2A" },
+                    { 16, 3, false, "2B" },
+                    { 17, 3, false, "2C" },
+                    { 18, 3, false, "2D" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Bookings",
+                columns: new[] { "Id", "AssignedSeatId", "BookingTime", "FlightId", "PassengerId" },
+                values: new object[,]
+                {
+                    { 2, 1, new DateTime(2024, 9, 1, 11, 0, 0, 0, DateTimeKind.Utc), 1, 2 },
+                    { 5, 7, new DateTime(2024, 9, 1, 14, 0, 0, 0, DateTimeKind.Utc), 2, 5 },
+                    { 7, 11, new DateTime(2024, 9, 1, 16, 0, 0, 0, DateTimeKind.Utc), 3, 3 }
                 });
 
             migrationBuilder.CreateIndex(

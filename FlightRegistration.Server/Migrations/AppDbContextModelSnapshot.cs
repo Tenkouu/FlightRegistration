@@ -50,23 +50,61 @@ namespace FlightRegistration.Server.Migrations
                         new
                         {
                             Id = 1,
-                            BookingTime = new DateTime(2024, 8, 1, 12, 0, 0, 0, DateTimeKind.Utc),
+                            BookingTime = new DateTime(2024, 9, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             FlightId = 1,
                             PassengerId = 1
                         },
                         new
                         {
                             Id = 2,
-                            BookingTime = new DateTime(2024, 8, 2, 15, 0, 0, 0, DateTimeKind.Utc),
+                            AssignedSeatId = 1,
+                            BookingTime = new DateTime(2024, 9, 1, 11, 0, 0, 0, DateTimeKind.Utc),
                             FlightId = 1,
                             PassengerId = 2
                         },
                         new
                         {
                             Id = 3,
-                            BookingTime = new DateTime(2024, 8, 2, 12, 0, 0, 0, DateTimeKind.Utc),
+                            BookingTime = new DateTime(2024, 9, 1, 12, 0, 0, 0, DateTimeKind.Utc),
+                            FlightId = 1,
+                            PassengerId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BookingTime = new DateTime(2024, 9, 1, 13, 0, 0, 0, DateTimeKind.Utc),
                             FlightId = 2,
+                            PassengerId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AssignedSeatId = 7,
+                            BookingTime = new DateTime(2024, 9, 1, 14, 0, 0, 0, DateTimeKind.Utc),
+                            FlightId = 2,
+                            PassengerId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BookingTime = new DateTime(2024, 9, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                            FlightId = 3,
                             PassengerId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AssignedSeatId = 11,
+                            BookingTime = new DateTime(2024, 9, 1, 16, 0, 0, 0, DateTimeKind.Utc),
+                            FlightId = 3,
+                            PassengerId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BookingTime = new DateTime(2024, 9, 1, 17, 0, 0, 0, DateTimeKind.Utc),
+                            FlightId = 3,
+                            PassengerId = 4
                         });
                 });
 
@@ -108,24 +146,35 @@ namespace FlightRegistration.Server.Migrations
                         new
                         {
                             Id = 1,
-                            ArrivalCity = "Tokyo (NRT)",
-                            ArrivalTime = new DateTime(2024, 9, 1, 16, 0, 0, 0, DateTimeKind.Utc),
-                            DepartureCity = "Ulaanbaatar (UBN)",
-                            DepartureTime = new DateTime(2024, 9, 1, 10, 30, 0, 0, DateTimeKind.Utc),
+                            ArrivalCity = "TYO",
+                            ArrivalTime = new DateTime(2024, 10, 10, 15, 0, 0, 0, DateTimeKind.Utc),
+                            DepartureCity = "UBN",
+                            DepartureTime = new DateTime(2024, 10, 10, 10, 0, 0, 0, DateTimeKind.Utc),
                             FlightNumber = "MG101",
                             Status = 0,
-                            TotalSeats = 2
+                            TotalSeats = 6
                         },
                         new
                         {
                             Id = 2,
-                            ArrivalCity = "Ulaanbaatar (UBN)",
-                            ArrivalTime = new DateTime(2024, 9, 5, 17, 0, 0, 0, DateTimeKind.Utc),
-                            DepartureCity = "Seoul (ICN)",
-                            DepartureTime = new DateTime(2024, 9, 5, 14, 0, 0, 0, DateTimeKind.Utc),
+                            ArrivalCity = "UBN",
+                            ArrivalTime = new DateTime(2024, 10, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            DepartureCity = "SEL",
+                            DepartureTime = new DateTime(2024, 10, 10, 14, 30, 0, 0, DateTimeKind.Utc),
                             FlightNumber = "MG202",
                             Status = 0,
-                            TotalSeats = 150
+                            TotalSeats = 4
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ArrivalCity = "FRA",
+                            ArrivalTime = new DateTime(2024, 10, 11, 18, 0, 0, 0, DateTimeKind.Utc),
+                            DepartureCity = "UBN",
+                            DepartureTime = new DateTime(2024, 10, 11, 8, 0, 0, 0, DateTimeKind.Utc),
+                            FlightNumber = "MG303",
+                            Status = 0,
+                            TotalSeats = 8
                         });
                 });
 
@@ -158,16 +207,37 @@ namespace FlightRegistration.Server.Migrations
                         new
                         {
                             Id = 1,
-                            FirstName = "Test",
-                            LastName = "PassengerA",
+                            FirstName = "Alice",
+                            LastName = "Wonder",
                             PassportNumber = "P000001"
                         },
                         new
                         {
                             Id = 2,
-                            FirstName = "Another",
-                            LastName = "UserB",
+                            FirstName = "Bob",
+                            LastName = "Builder",
                             PassportNumber = "P000002"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FirstName = "Charlie",
+                            LastName = "Chaplin",
+                            PassportNumber = "P000003"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FirstName = "Diana",
+                            LastName = "Prince",
+                            PassportNumber = "P000004"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            FirstName = "Edward",
+                            LastName = "Elric",
+                            PassportNumber = "P000005"
                         });
                 });
 
@@ -198,7 +268,7 @@ namespace FlightRegistration.Server.Migrations
                         {
                             Id = 1,
                             FlightId = 1,
-                            IsReserved = false,
+                            IsReserved = true,
                             SeatNumber = "1A"
                         },
                         new
@@ -213,35 +283,112 @@ namespace FlightRegistration.Server.Migrations
                             Id = 3,
                             FlightId = 1,
                             IsReserved = false,
-                            SeatNumber = "2A"
+                            SeatNumber = "1C"
                         },
                         new
                         {
                             Id = 4,
                             FlightId = 1,
                             IsReserved = false,
-                            SeatNumber = "2B"
+                            SeatNumber = "2A"
                         },
                         new
                         {
                             Id = 5,
-                            FlightId = 2,
+                            FlightId = 1,
                             IsReserved = false,
-                            SeatNumber = "1A"
+                            SeatNumber = "2B"
                         },
                         new
                         {
                             Id = 6,
+                            FlightId = 1,
+                            IsReserved = false,
+                            SeatNumber = "2C"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            FlightId = 2,
+                            IsReserved = true,
+                            SeatNumber = "1A"
+                        },
+                        new
+                        {
+                            Id = 8,
                             FlightId = 2,
                             IsReserved = false,
                             SeatNumber = "1B"
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 9,
                             FlightId = 2,
                             IsReserved = false,
+                            SeatNumber = "2A"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            FlightId = 2,
+                            IsReserved = false,
+                            SeatNumber = "2B"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            FlightId = 3,
+                            IsReserved = true,
+                            SeatNumber = "1A"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            FlightId = 3,
+                            IsReserved = false,
+                            SeatNumber = "1B"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            FlightId = 3,
+                            IsReserved = false,
                             SeatNumber = "1C"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            FlightId = 3,
+                            IsReserved = false,
+                            SeatNumber = "1D"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            FlightId = 3,
+                            IsReserved = false,
+                            SeatNumber = "2A"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            FlightId = 3,
+                            IsReserved = false,
+                            SeatNumber = "2B"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            FlightId = 3,
+                            IsReserved = false,
+                            SeatNumber = "2C"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            FlightId = 3,
+                            IsReserved = false,
+                            SeatNumber = "2D"
                         });
                 });
 

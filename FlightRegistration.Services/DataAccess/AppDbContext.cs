@@ -20,115 +20,109 @@ namespace FlightRegistration.Services.DataAccess
         {
             base.OnModelCreating(modelBuilder);
 
-            // --- Entity Configurations ---
-
-            // Passenger: Ensure PassportNumber is unique
+            // --- Entity Configurations (Keep these as they were) ---
             modelBuilder.Entity<Passenger>()
                 .HasIndex(p => p.PassportNumber)
                 .IsUnique();
-
-            // Flight to Bookings (One-to-Many)
             modelBuilder.Entity<Flight>()
-                .HasMany(f => f.Bookings)       // Flight has many Bookings
-                .WithOne(b => b.Flight)         // Each Booking belongs to one Flight
-                .HasForeignKey(b => b.FlightId) // Foreign key is Booking.FlightId
-                .OnDelete(DeleteBehavior.Cascade); // If a Flight is deleted, its Bookings are also deleted.
-
-            // Flight to Seats (One-to-Many)
+                .HasMany(f => f.Bookings)
+                .WithOne(b => b.Flight)
+                .HasForeignKey(b => b.FlightId)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Flight>()
-                .HasMany(f => f.Seats)          // Flight has many Seats
-                .WithOne(s => s.Flight)         // Each Seat belongs to one Flight
-                .HasForeignKey(s => s.FlightId) // Foreign key is Seat.FlightId
-                .OnDelete(DeleteBehavior.Cascade); // If a Flight is deleted, its Seats are also deleted.
-
-            // Passenger to Bookings (One-to-Many)
+                .HasMany(f => f.Seats)
+                .WithOne(s => s.Flight)
+                .HasForeignKey(s => s.FlightId)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Passenger>()
-                .HasMany(p => p.Bookings)       // Passenger has many Bookings
-                .WithOne(b => b.Passenger)      // Each Booking belongs to one Passenger
-                .HasForeignKey(b => b.PassengerId) // Foreign key is Booking.PassengerId
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting a Passenger if they have Bookings.
-
-            // Booking to Seat (One-to-One, optional, with Booking as the dependent)
+                .HasMany(p => p.Bookings)
+                .WithOne(b => b.Passenger)
+                .HasForeignKey(b => b.PassengerId)
+                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Booking>()
-                .HasOne(b => b.AssignedSeat)        // Booking has one (optional) AssignedSeat
-                .WithOne(s => s.ReservedByBooking)  // Seat is reserved by one (optional) Booking (inverse navigation)
-                .HasForeignKey<Booking>(b => b.AssignedSeatId) // The foreign key is Booking.AssignedSeatId
-                .IsRequired(false)                  // A Booking can exist without an AssignedSeat
-                .OnDelete(DeleteBehavior.SetNull);   // If the Seat (principal) is deleted, set Booking.AssignedSeatId to null.
+                .HasOne(b => b.AssignedSeat)
+                .WithOne(s => s.ReservedByBooking)
+                .HasForeignKey<Booking>(b => b.AssignedSeatId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
+            // --- NEW Seed Data (Corrected) ---
 
-            // --- Seed Data ---
+            // Passengers
+            modelBuilder.Entity<Passenger>().HasData(
+                new Passenger { Id = 1, PassportNumber = "P000001", FirstName = "Alice", LastName = "Wonder" },
+                new Passenger { Id = 2, PassportNumber = "P000002", FirstName = "Bob", LastName = "Builder" },
+                new Passenger { Id = 3, PassportNumber = "P000003", FirstName = "Charlie", LastName = "Chaplin" },
+                new Passenger { Id = 4, PassportNumber = "P000004", FirstName = "Diana", LastName = "Prince" },
+                new Passenger { Id = 5, PassportNumber = "P000005", FirstName = "Edward", LastName = "Elric" }
+            );
 
-            // Define static DateTime values for seeding
-            var seedTimeFlight1Departure = new DateTime(2024, 9, 1, 10, 30, 0, DateTimeKind.Utc);
-            var seedTimeFlight1Arrival = seedTimeFlight1Departure.AddHours(5).AddMinutes(30); // e.g., 5h 30m flight
-
-            var seedTimeFlight2Departure = new DateTime(2024, 9, 5, 14, 0, 0, DateTimeKind.Utc);
-            var seedTimeFlight2Arrival = seedTimeFlight2Departure.AddHours(3); // e.g., 3h flight
+            // Flights
+            var flight1Dep = new DateTime(2024, 10, 10, 10, 0, 0, DateTimeKind.Utc);
+            var flight2Dep = new DateTime(2024, 10, 10, 14, 30, 0, DateTimeKind.Utc);
+            var flight3Dep = new DateTime(2024, 10, 11, 8, 0, 0, DateTimeKind.Utc);
 
             modelBuilder.Entity<Flight>().HasData(
-                new Flight
+                new Flight { Id = 1, FlightNumber = "MG101", DepartureCity = "UBN", ArrivalCity = "TYO", DepartureTime = flight1Dep, ArrivalTime = flight1Dep.AddHours(5), Status = FlightStatus.Scheduled, TotalSeats = 6 },
+                new Flight { Id = 2, FlightNumber = "MG202", DepartureCity = "SEL", ArrivalCity = "UBN", DepartureTime = flight2Dep, ArrivalTime = flight2Dep.AddHours(3.5), Status = FlightStatus.Scheduled, TotalSeats = 4 },
+                new Flight { Id = 3, FlightNumber = "MG303", DepartureCity = "UBN", ArrivalCity = "FRA", DepartureTime = flight3Dep, ArrivalTime = flight3Dep.AddHours(10), Status = FlightStatus.Scheduled, TotalSeats = 8 }
+            );
+
+            // Seats
+            // We need to know which Seat IDs will be pre-assigned to set IsReserved correctly.
+            // Pre-assigned seats:
+            // Booking ID 2 (Bob) -> Flight 1 (MG101), Seat 1A (this will be Seat ID 1)
+            // Booking ID 5 (Edward) -> Flight 2 (MG202), Seat 1A (this will be Seat ID 7: 6 from F1 + 1st from F2)
+            // Booking ID 7 (Charlie) -> Flight 3 (MG303), Seat 1A (this will be Seat ID 11: 6 from F1 + 4 from F2 + 1st from F3)
+
+            int seatIdCounter = 1;
+            // Flight 1 (MG101) - 6 seats
+            for (int row = 1; row <= 2; row++)
+            {
+                foreach (char col in new[] { 'A', 'B', 'C' })
                 {
-                    Id = 1,
-                    FlightNumber = "MG101", // Changed to avoid potential conflict with your previous FL prefix
-                    DepartureCity = "Ulaanbaatar (UBN)",
-                    ArrivalCity = "Tokyo (NRT)",
-                    DepartureTime = seedTimeFlight1Departure,
-                    ArrivalTime = seedTimeFlight1Arrival,
-                    Status = FlightStatus.Scheduled,
-                    TotalSeats = 2 // Keeping small for easy seat testing
-                },
-                new Flight
-                {
-                    Id = 2,
-                    FlightNumber = "MG202",
-                    DepartureCity = "Seoul (ICN)",
-                    ArrivalCity = "Ulaanbaatar (UBN)",
-                    DepartureTime = seedTimeFlight2Departure,
-                    ArrivalTime = seedTimeFlight2Arrival,
-                    Status = FlightStatus.Scheduled,
-                    TotalSeats = 150
+                    bool isReserved = (seatIdCounter == 1); // Seat ID 1 is pre-assigned
+                    modelBuilder.Entity<Seat>().HasData(new Seat { Id = seatIdCounter, FlightId = 1, SeatNumber = $"{row}{col}", IsReserved = isReserved });
+                    seatIdCounter++;
                 }
-            );
+            }
+            // Flight 2 (MG202) - 4 seats
+            for (int row = 1; row <= 2; row++)
+            {
+                foreach (char col in new[] { 'A', 'B' })
+                {
+                    bool isReserved = (seatIdCounter == 7); // Seat ID 7 is pre-assigned
+                    modelBuilder.Entity<Seat>().HasData(new Seat { Id = seatIdCounter, FlightId = 2, SeatNumber = $"{row}{col}", IsReserved = isReserved });
+                    seatIdCounter++;
+                }
+            }
+            // Flight 3 (MG303) - 8 seats
+            for (int row = 1; row <= 2; row++)
+            {
+                foreach (char col in new[] { 'A', 'B', 'C', 'D' })
+                {
+                    bool isReserved = (seatIdCounter == 11); // Seat ID 11 is pre-assigned
+                    modelBuilder.Entity<Seat>().HasData(new Seat { Id = seatIdCounter, FlightId = 3, SeatNumber = $"{row}{col}", IsReserved = isReserved });
+                    seatIdCounter++;
+                }
+            }
 
-            modelBuilder.Entity<Seat>().HasData(
-                // Seats for Flight 1 (MG101)
-                new Seat { Id = 1, FlightId = 1, SeatNumber = "1A", IsReserved = false },
-                new Seat { Id = 2, FlightId = 1, SeatNumber = "1B", IsReserved = false },
-                new Seat { Id = 3, FlightId = 1, SeatNumber = "2A", IsReserved = false }, // Added one more for variety
-                new Seat { Id = 4, FlightId = 1, SeatNumber = "2B", IsReserved = false }, // And another
-
-                // Seats for Flight 2 (MG202) - example, can add more
-                new Seat { Id = 5, FlightId = 2, SeatNumber = "1A", IsReserved = false },
-                new Seat { Id = 6, FlightId = 2, SeatNumber = "1B", IsReserved = false },
-                new Seat { Id = 7, FlightId = 2, SeatNumber = "1C", IsReserved = false }
-            );
-
-            // You can also seed Passengers and Bookings if needed for initial testing scenarios
-            // For example:
-            // modelBuilder.Entity<Passenger>().HasData(
-            //    new Passenger { Id = 1, PassportNumber = "P123456", FirstName = "John", LastName = "Doe" }
-            // );
-            // modelBuilder.Entity<Booking>().HasData(
-            //    new Booking { Id = 1, FlightId = 1, PassengerId = 1, BookingTime = DateTime.UtcNow.AddDays(-10) } // Static time for BookingTime too!
-            // );
-
-            modelBuilder.Entity<Passenger>().HasData(
-    new Passenger { Id = 1, PassportNumber = "P000001", FirstName = "Test", LastName = "PassengerA" },
-    new Passenger { Id = 2, PassportNumber = "P000002", FirstName = "Another", LastName = "UserB" }
-);
-
-            // Static booking times
-            var bookingTime1 = new DateTime(2024, 8, 1, 12, 0, 0, DateTimeKind.Utc);
-            var bookingTime2 = new DateTime(2024, 8, 2, 15, 0, 0, DateTimeKind.Utc);
-
+            // Bookings
+            var bookingTime = new DateTime(2024, 9, 1, 10, 0, 0, DateTimeKind.Utc);
             modelBuilder.Entity<Booking>().HasData(
-                // Passenger 1 booked on Flight 1 (MG101), no seat assigned yet
-                new Booking { Id = 1, FlightId = 1, PassengerId = 1, BookingTime = bookingTime1, AssignedSeatId = null },
-                // Passenger 2 booked on Flight 1 (MG101), no seat assigned yet
-                new Booking { Id = 2, FlightId = 1, PassengerId = 2, BookingTime = bookingTime2, AssignedSeatId = null },
-                // Passenger 1 also booked on Flight 2 (MG202), no seat assigned yet
-                new Booking { Id = 3, FlightId = 2, PassengerId = 1, BookingTime = bookingTime1.AddDays(1), AssignedSeatId = null }
+                // Flight MG101
+                new Booking { Id = 1, FlightId = 1, PassengerId = 1, BookingTime = bookingTime, AssignedSeatId = null },         // Alice, NO SEAT
+                new Booking { Id = 2, FlightId = 1, PassengerId = 2, BookingTime = bookingTime.AddHours(1), AssignedSeatId = 1 },  // Bob, SEAT ID 1 on MG101
+                new Booking { Id = 3, FlightId = 1, PassengerId = 3, BookingTime = bookingTime.AddHours(2), AssignedSeatId = null }, // Charlie, NO SEAT
+
+                // Flight MG202
+                new Booking { Id = 4, FlightId = 2, PassengerId = 4, BookingTime = bookingTime.AddHours(3), AssignedSeatId = null },         // Diana, NO SEAT
+                new Booking { Id = 5, FlightId = 2, PassengerId = 5, BookingTime = bookingTime.AddHours(4), AssignedSeatId = 7 },  // Edward, SEAT ID 7 on MG202
+
+                // Flight MG303
+                new Booking { Id = 6, FlightId = 3, PassengerId = 1, BookingTime = bookingTime.AddHours(5), AssignedSeatId = null },          // Alice, NO SEAT
+                new Booking { Id = 7, FlightId = 3, PassengerId = 3, BookingTime = bookingTime.AddHours(6), AssignedSeatId = 11 }, // Charlie, SEAT ID 11 on MG303
+                new Booking { Id = 8, FlightId = 3, PassengerId = 4, BookingTime = bookingTime.AddHours(7), AssignedSeatId = null }   // Diana, NO SEAT
             );
         }
     }
