@@ -3,7 +3,7 @@
     public class SeatAssignmentRequestDto
     {
         public int BookingId { get; set; }
-        public string SeatNumber { get; set; } // e.g., "3A"
-        public int FlightId { get; set; } // Important for identifying the correct seat map
+        public int SeatId { get; set; } // Changed from SeatNumber to SeatId for more direct assignment
+        // public int FlightId { get; set; } // FlightId can be derived from BookingId on the server
     }
 }
