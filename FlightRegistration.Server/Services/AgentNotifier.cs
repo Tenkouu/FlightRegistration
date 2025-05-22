@@ -6,16 +6,26 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using FlightRegistration.Core.Interfaces; // Uses the interface from FlightRegistration.Core
-using FlightRegistration.Core.Models;     // For FlightStatus
+using FlightRegistration.Core.Interfaces;
+using FlightRegistration.Core.Models;
+using FlightRegistration.Server.Hubs; // <--- ADD THIS for FlightDisplayHub
+using Microsoft.AspNetCore.SignalR;  // <--- ADD THIS for IHubContext
 
 namespace FlightRegistration.Server.Services
 {
-    public class AgentNotifier : IAgentNotifier // Implements the interface from Core
+    public class AgentNotifier : IAgentNotifier
     {
         private readonly List<Socket> _connectedClients = new List<Socket>();
         private readonly object _lock = new object();
+        private readonly IHubContext<FlightDisplayHub> _flightDisplayHubContext; // <--- ADD THIS
 
+        // Modify constructor to inject IHubContext
+        public AgentNotifier(IHubContext<FlightDisplayHub> flightDisplayHubContext) // <--- MODIFIED
+        {
+            _flightDisplayHubContext = flightDisplayHubContext; // <--- ADD THIS
+        }
+
+        // ... (AddClient, RemoveClient, BroadcastMessageAsync methods remain the same) ...
         public void AddClient(Socket clientSocket)
         {
             lock (_lock)
@@ -93,43 +103,56 @@ namespace FlightRegistration.Server.Services
                         {
                             clientToRemove.Dispose();
                         }
-                        catch { } // Ignore dispose errors if already disposed/closed
+                        catch { }
                     }
                 }
             }
         }
 
+
+        // --- Implementation of IAgentNotifier ---
         public async Task NotifySeatReservedAsync(int flightId, int seatId, string seatNumber, string agentIdWhoReserved)
         {
-            var message = new
+            var agentMessage = new
             {
                 Type = "SeatReservedUpdate",
                 Payload = new { FlightId = flightId, SeatId = seatId, SeatNumber = seatNumber, IsReserved = true, ReservedByAgentId = agentIdWhoReserved }
             };
-            Console.WriteLine($"Broadcasting SeatReservedUpdate: {JsonSerializer.Serialize(message)}");
-            await BroadcastMessageAsync(message);
+            Console.WriteLine($"Broadcasting to Agent Sockets: {JsonSerializer.Serialize(agentMessage)}");
+            await BroadcastMessageAsync(agentMessage);
+
+            // For the public display, we might not send individual seat reservations,
+            // or we might send a summarized update. For now, let's skip sending this to FlightDisplayHub
+            // unless a specific requirement arises for it.
         }
 
         public async Task NotifySeatReservationFailedAsync(int flightId, int seatId, string seatNumber, string attemptingAgentId, string reason)
         {
-            var message = new
+            var agentMessage = new
             {
                 Type = "SeatReservationFailed",
                 Payload = new { FlightId = flightId, SeatId = seatId, SeatNumber = seatNumber, AttemptingAgentId = attemptingAgentId, Reason = reason }
             };
-            Console.WriteLine($"Broadcasting SeatReservationFailed: {JsonSerializer.Serialize(message)}");
-            await BroadcastMessageAsync(message);
+            Console.WriteLine($"Broadcasting to Agent Sockets: {JsonSerializer.Serialize(agentMessage)}");
+            await BroadcastMessageAsync(agentMessage);
         }
 
         public async Task NotifyFlightStatusChangedAsync(int flightId, FlightStatus newStatus, string flightNumber)
         {
-            var message = new
+            // Message for Agent Sockets
+            var agentMessage = new
             {
                 Type = "FlightStatusUpdate",
                 Payload = new { FlightId = flightId, FlightNumber = flightNumber, NewStatus = newStatus.ToString(), NewStatusId = (int)newStatus }
             };
-            Console.WriteLine($"Broadcasting FlightStatusUpdate: {JsonSerializer.Serialize(message)}");
-            await BroadcastMessageAsync(message);
+            Console.WriteLine($"Broadcasting to Agent Sockets: {JsonSerializer.Serialize(agentMessage)}");
+            await BroadcastMessageAsync(agentMessage);
+
+            // Message for Flight Display Hub (SignalR)
+            // The hub has a method `SendFlightStatusUpdate(int flightId, string flightNumber, FlightStatus newStatus)`
+            // We can call it directly.
+            Console.WriteLine($"Sending to FlightDisplayHub: Flight {flightNumber} status to {newStatus}");
+            await _flightDisplayHubContext.Clients.All.SendAsync("ReceiveFlightStatusUpdate", flightId, flightNumber, newStatus.ToString(), (int)newStatus);
         }
     }
 }

@@ -9,6 +9,7 @@ using FlightRegistration.Server.Sockets;  // For AgentSocketServer
 using FlightRegistration.Core.Interfaces; // For IAgentNotifier
 using FlightRegistration.Server.Services; // For AgentNotifier (implementation)
 using FlightRegistration.Server.Sockets;  // For AgentSocketServer
+using FlightRegistration.Server.Hubs;
 
 
 
@@ -69,6 +70,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSignalR(); // <--- ADD THIS LINE
+
+builder.Services.AddControllers();
 
 // builder.Services.AddScoped<ICheckInService, CheckInService>(); // You'll add this later
 // Later, you'll add SignalR and other services here
@@ -89,7 +93,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Later, you'll map your SignalR hub here
-// app.MapHub<FlightHub>("/flightHub");
+app.MapHub<FlightDisplayHub>("/flightDisplayHub");
 
 app.Run();
