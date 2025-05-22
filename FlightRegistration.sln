@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRegistration.Core", "FlightRegistration.Core\FlightRegistration.Core.csproj", "{6CBF4E13-909C-4990-B852-7F4BA550DFE8}"
 EndProject
@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRegistration.Server",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRegistration.WinFormsClient", "FlightRegistration.WinFormsClient\FlightRegistration.WinFormsClient.csproj", "{934B4EFD-3F82-495F-95AF-E62A060C647D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRegistration.BlazorDisplay", "FlightRegistration.BlazorDisplay\FlightRegistration.BlazorDisplay.csproj", "{370B093E-3E5B-45DB-B673-27A36AB9470C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTcpClient", "SimpleTcpClient\SimpleTcpClient.csproj", "{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRegistration.BlazorDisplay", "FlightRegistration.BlazorDisplay\FlightRegistration.BlazorDisplay.csproj", "{2FC4B157-B754-4E9B-818B-6548D79C540C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +37,14 @@ Global
 		{934B4EFD-3F82-495F-95AF-E62A060C647D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{934B4EFD-3F82-495F-95AF-E62A060C647D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{934B4EFD-3F82-495F-95AF-E62A060C647D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{370B093E-3E5B-45DB-B673-27A36AB9470C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{370B093E-3E5B-45DB-B673-27A36AB9470C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{370B093E-3E5B-45DB-B673-27A36AB9470C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{370B093E-3E5B-45DB-B673-27A36AB9470C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3128F9D-47CE-4100-ACFF-231EA1BF7AF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FC4B157-B754-4E9B-818B-6548D79C540C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FC4B157-B754-4E9B-818B-6548D79C540C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FC4B157-B754-4E9B-818B-6548D79C540C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FC4B157-B754-4E9B-818B-6548D79C540C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,21 @@
+﻿@inherits LayoutComponentBase
+@* Optional: If MainLayout.razor is in the Layout folder, you might add: *@
+@* @namespace FlightRegistration.BlazorDisplay.Layout *@
+
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @* You can put a global link or info here if you want *@
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

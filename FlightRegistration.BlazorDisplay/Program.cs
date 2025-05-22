@@ -1,27 +1,17 @@
-using FlightRegistration.BlazorDisplay.Components;
+using Microsoft.AspNetCore.Components.Web; // May not be needed if HeadOutlet is only in App.razor
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using FlightRegistration.BlazorDisplay; // For App.razor
+using FlightRegistration.BlazorDisplay.Services;
+using System.Net.Http;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+// This assumes App.razor is your root component.
+builder.RootComponents.Add<App>("#app");
+// If your App.razor will contain <HeadOutlet />, you don't need to add it here.
+// builder.RootComponents.Add<HeadOutlet>("head::after"); 
 
-var app = builder.Build();
+// In Program.cs
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }); builder.Services.AddSingleton<FlightDisplayService>(); // Ensure FlightDisplayService.cs exists and is correct
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.Run();
+await builder.Build().RunAsync();
