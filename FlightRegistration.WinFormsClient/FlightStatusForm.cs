@@ -17,7 +17,7 @@ namespace FlightRegistration.WinFormsClient
         private readonly HttpClient _httpClient; // Each instance of this form gets its own HttpClient
         private FlightDetailsDto _currentFlightDetails;
 
-        public FlightStatusForm() // Removed initialFlightId, it's fully standalone
+        public FlightStatusForm(int? currentFlightId) // Removed initialFlightId, it's fully standalone
         {
             InitializeComponent(); // Loads YOUR designer settings
 

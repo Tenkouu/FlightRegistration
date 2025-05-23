@@ -51,13 +51,18 @@ namespace FlightRegistration.WinFormsClient
             _httpClient.BaseAddress = new Uri("https://localhost:7134/"); // !!! ADJUST PORT !!!
 
             // Initial button states - these should match controls in your designer
-            if (btnDisconnectSocket != null) btnDisconnectSocket.Enabled = false;
+            if (btnManageFlightStatus != null) btnManageFlightStatus.Enabled = false;
             // btnAssignSeatPlaceholder is assumed GONE from your designer.
             // If you add btnManageFlightStatus later, initialize its state here.
 
             _currentBookingsBindingList = new BindingList<PassengerBookingDetailsDto>();
             InitializeDataGridView();
             ClearFlightDetails();
+        }
+
+        public void AddLogMessagePublic(string message)
+        {
+            AddLogMessage(message);
         }
 
         private void InitializeDataGridView()
@@ -124,7 +129,7 @@ namespace FlightRegistration.WinFormsClient
         {
             if (this.InvokeRequired) { this.Invoke(new Action(HandleSocketDisconnected)); return; }
             if (btnConnectSocket != null) btnConnectSocket.Enabled = true;
-            if (btnDisconnectSocket != null) btnDisconnectSocket.Enabled = false;
+            if (btnManageFlightStatus != null) btnManageFlightStatus.Enabled = false;
             AddLogMessage("Socket connection lost or closed.");
         }
 
@@ -161,9 +166,23 @@ namespace FlightRegistration.WinFormsClient
 
         private async void btnConnectSocket_Click(object sender, EventArgs e)
         {
-            if (!_socketClient.IsConnected) { AddLogMessage("Connecting..."); btnConnectSocket.Enabled = false; btnDisconnectSocket.Enabled = false; await _socketClient.ConnectAsync(); if (_socketClient.IsConnected) { btnDisconnectSocket.Enabled = true; } else { btnConnectSocket.Enabled = true; } } else { AddLogMessage("Already connected."); }
+            if (!_socketClient.IsConnected) { AddLogMessage("Connecting..."); btnConnectSocket.Enabled = false; btnManageFlightStatus.Enabled = false; await _socketClient.ConnectAsync(); if (_socketClient.IsConnected) { btnManageFlightStatus.Enabled = true; } else { btnConnectSocket.Enabled = true; } } else { AddLogMessage("Already connected."); }
         }
-        private void btnDisconnectSocket_Click(object sender, EventArgs e) { if (_socketClient.IsConnected) _socketClient.Disconnect(); else AddLogMessage("Not connected."); }
+        private void btnDisconnectSocket_Click(object sender, EventArgs e)
+        {
+            if (_socketClient != null && _socketClient.IsConnected)
+            {
+                AddLogMessage("Disconnecting from socket server...");
+                _socketClient.Disconnect();
+                // The OnDisconnected event handler (_socketClient.OnDisconnected += HandleSocketDisconnected;)
+                // should take care of updating button states (like re-enabling btnConnectSocket
+                // and disabling btnDisconnectSocket) and logging "Socket connection lost or closed."
+            }
+            else
+            {
+                AddLogMessage("Not currently connected.");
+            }
+        }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) { _socketClient?.Disconnect(); _httpClient?.Dispose(); }
 
         private async void btnSearchPassenger_Click(object sender, EventArgs e)
@@ -180,7 +199,26 @@ namespace FlightRegistration.WinFormsClient
             catch (Exception ex) { MessageBox.Show($"App error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             finally { RefreshBookingsGrid(); _selectedBooking = null; ClearAndDisableFlightControls(); }
         }
-        private void ClearAndDisableFlightControls() { ClearFlightDetails(); /* if (btnManageFlightStatus != null) btnManageFlightStatus.Enabled = false; */ }
+        private void ClearAndDisableFlightControls()
+        {
+            ClearFlightDetails();
+            if (btnManageFlightStatus != null) btnManageFlightStatus.Enabled = false; // Ensure it's disabled
+        }
+
+        private void btnManageFlightStatus_Click(object sender, EventArgs e)
+        {
+            int? currentFlightId = _selectedBooking?.FlightId;
+
+            // Assuming FlightStatusForm is in the same namespace or you have a using directive for it
+            using (FlightStatusForm statusForm = new FlightStatusForm(currentFlightId))
+            {
+                AddLogMessage($"Opening Manage Flight Status window{(currentFlightId.HasValue ? " for flight ID " + currentFlightId.Value : " (no flight pre-selected)")}...");
+                statusForm.ShowDialog(this); // Show as a modal dialog
+                AddLogMessage("Manage Flight Status window closed.");
+                // Form1's flight status display will update via socket messages triggered by server
+                // when FlightStatusForm successfully updates a status.
+            }
+        }
 
         private void RefreshBookingsGrid() { if (dgvBookings.InvokeRequired) dgvBookings.Invoke(new Action(RefreshBookingsGrid)); else { dgvBookings.DataSource = null; dgvBookings.DataSource = _currentBookingsBindingList; } }
 
@@ -202,12 +240,15 @@ namespace FlightRegistration.WinFormsClient
             AddLogMessage($"ProcessSelectedBooking: {(_selectedBooking != null ? "BookingID " + _selectedBooking.BookingId : "None")}");
             if (_selectedBooking != null)
             {
-                // btnAssignSeatPlaceholder is removed
-                // if (btnManageFlightStatus != null) btnManageFlightStatus.Enabled = true; 
-                UpdateLabelSafe(lblSelectedSeatInfo, string.IsNullOrEmpty(_selectedBooking.CurrentSeatNumber) ? "Selected Seat: (None)" : $"Current Seat: {_selectedBooking.CurrentSeatNumber}"); // FIX 5
+                if (btnManageFlightStatus != null) btnManageFlightStatus.Enabled = true; // Enable the new button
+                UpdateLabelSafe(lblSelectedSeatInfo, string.IsNullOrEmpty(_selectedBooking.CurrentSeatNumber) ? "Selected Seat: (None)" : $"Current Seat: {_selectedBooking.CurrentSeatNumber}");
                 await LoadFlightDetailsForSelectedBooking();
             }
-            else { /* if (btnManageFlightStatus != null) btnManageFlightStatus.Enabled = false; */ ClearFlightDetails(); }
+            else
+            {
+                if (btnManageFlightStatus != null) btnManageFlightStatus.Enabled = false; // Disable the new button
+                ClearFlightDetails();
+            }
         }
 
         private async Task LoadFlightDetailsForSelectedBooking()

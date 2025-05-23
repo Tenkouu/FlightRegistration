@@ -31,6 +31,7 @@ namespace FlightRegistration.WinFormsClient
         {
             lstLogMessages = new ListBox();
             pnlConnection = new Panel();
+            btnManageFlightStatus = new Button();
             btnConnectSocket = new Button();
             btnDisconnectSocket = new Button();
             lblTitle = new Label();
@@ -67,6 +68,7 @@ namespace FlightRegistration.WinFormsClient
             // pnlConnection
             // 
             pnlConnection.BackColor = Color.FromArgb(42, 45, 46);
+            pnlConnection.Controls.Add(btnManageFlightStatus);
             pnlConnection.Controls.Add(btnConnectSocket);
             pnlConnection.Controls.Add(btnDisconnectSocket);
             pnlConnection.Dock = DockStyle.Top;
@@ -76,12 +78,30 @@ namespace FlightRegistration.WinFormsClient
             pnlConnection.Size = new Size(786, 52);
             pnlConnection.TabIndex = 4;
             // 
+            // btnManageFlightStatus
+            // 
+            btnManageFlightStatus.Anchor = AnchorStyles.Top;
+            btnManageFlightStatus.BackColor = Color.FromArgb(42, 45, 46);
+            btnManageFlightStatus.Enabled = false;
+            btnManageFlightStatus.FlatAppearance.BorderSize = 2;
+            btnManageFlightStatus.FlatStyle = FlatStyle.Flat;
+            btnManageFlightStatus.Font = new Font("Miracode", 9F, FontStyle.Bold);
+            btnManageFlightStatus.ForeColor = Color.White;
+            btnManageFlightStatus.Location = new Point(311, 9);
+            btnManageFlightStatus.Name = "btnManageFlightStatus";
+            btnManageFlightStatus.Size = new Size(180, 37);
+            btnManageFlightStatus.TabIndex = 2;
+            btnManageFlightStatus.Text = "Status";
+            btnManageFlightStatus.UseVisualStyleBackColor = false;
+            btnManageFlightStatus.Click += btnManageFlightStatus_Click;
+            // 
             // btnConnectSocket
             // 
-            btnConnectSocket.BackColor = Color.ForestGreen;
+            btnConnectSocket.BackColor = Color.DarkGreen;
+            btnConnectSocket.FlatAppearance.BorderSize = 0;
             btnConnectSocket.FlatStyle = FlatStyle.Flat;
             btnConnectSocket.Font = new Font("Miracode", 9F, FontStyle.Bold);
-            btnConnectSocket.ForeColor = Color.Black;
+            btnConnectSocket.ForeColor = Color.Transparent;
             btnConnectSocket.Location = new Point(13, 8);
             btnConnectSocket.Name = "btnConnectSocket";
             btnConnectSocket.Size = new Size(175, 37);
@@ -93,13 +113,12 @@ namespace FlightRegistration.WinFormsClient
             // btnDisconnectSocket
             // 
             btnDisconnectSocket.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDisconnectSocket.BackColor = Color.DarkRed;
-            btnDisconnectSocket.Enabled = false;
+            btnDisconnectSocket.BackColor = Color.Maroon;
             btnDisconnectSocket.FlatAppearance.BorderColor = Color.DarkRed;
             btnDisconnectSocket.FlatStyle = FlatStyle.Flat;
             btnDisconnectSocket.Font = new Font("Miracode", 9F, FontStyle.Bold);
-            btnDisconnectSocket.ForeColor = Color.FromArgb(241, 207, 71);
-            btnDisconnectSocket.Location = new Point(591, 8);
+            btnDisconnectSocket.ForeColor = Color.White;
+            btnDisconnectSocket.Location = new Point(593, 8);
             btnDisconnectSocket.Name = "btnDisconnectSocket";
             btnDisconnectSocket.Size = new Size(180, 37);
             btnDisconnectSocket.TabIndex = 1;
@@ -300,7 +319,7 @@ namespace FlightRegistration.WinFormsClient
         private System.Windows.Forms.ListBox lstLogMessages;
         private System.Windows.Forms.Panel pnlConnection;
         private System.Windows.Forms.Button btnConnectSocket;
-        private System.Windows.Forms.Button btnDisconnectSocket;
+        private System.Windows.Forms.Button btnManageFlightStatus;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.GroupBox grpPassengerSearch;
         private System.Windows.Forms.Button btnSearchPassenger;
@@ -314,5 +333,6 @@ namespace FlightRegistration.WinFormsClient
         private System.Windows.Forms.Label lblSelectedFlightInfo;
 
         private System.Windows.Forms.Label lblSelectedSeatInfo;
+        private Button btnDisconnectSocket;
     }
 }
