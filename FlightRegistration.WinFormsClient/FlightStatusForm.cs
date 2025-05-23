@@ -25,7 +25,7 @@ namespace FlightRegistration.WinFormsClient
             _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7134/") }; // !!! ADJUST PORT !!!
 
             PopulateFlightStatusComboBox();
-            grpUpdateStatusControls.Enabled = false; // Disable update section initially
+          
         }
 
         private void PopulateFlightStatusComboBox()

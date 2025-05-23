@@ -321,12 +321,15 @@ namespace FlightRegistration.WinFormsClient
                     if (resp.IsSuccessStatusCode)
                     {
                         var res = await resp.Content.ReadFromJsonAsync<SeatAssignmentResponseDto>();
-                        MessageBox.Show(res?.Message ?? "Seat Assigned!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information); // Boarding pass print removed
+                        AddLogMessage($"Seat assigned successfully via API: {res?.Message}"); // Keep a log of the API message
+
+                        ShowBoardingPass(res?.BoardingPass); // <<<--- THIS IS THE MODIFIED LINE (REPLACES THE MessageBox)
+
                         _selectedBooking.CurrentSeatNumber = selSeat.SeatNumber;
                         selSeat.IsReserved = true;
                         RefreshBookingsGrid();
                         RenderSeatMapPlaceholder();
-                        // btnAssignSeatPlaceholder.Enabled = false; // This button is removed
+                        // btnAssignSeatPlaceholder.Enabled = false; // This button is removed from your designer
                         UpdateLabelSafe(lblSelectedSeatInfo, $"Assigned: {selSeat.SeatNumber}");
                     }
                     else { var err = await resp.Content.ReadFromJsonAsync<ErrorResponseDto>(); MessageBox.Show($"Failed: {err?.Message ?? resp.ReasonPhrase}", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error); await LoadFlightDetailsForSelectedBooking(); }
@@ -335,6 +338,38 @@ namespace FlightRegistration.WinFormsClient
             }
             else { UpdateLabelSafe(lblSelectedSeatInfo, "Selected Seat: (None)"); }
         }
+
+        // Add this method inside the Form1 class
+        private void ShowBoardingPass(BoardingPassDto boardingPass)
+        {
+            if (boardingPass == null)
+            {
+                AddLogMessage("Boarding pass data received was null. Cannot display.");
+                MessageBox.Show("Seat assigned, but boarding pass information is unavailable.", "Boarding Pass", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Use System.Text.StringBuilder for efficient string concatenation
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.AppendLine("✈️ --- BOARDING PASS --- ✈️");
+            sb.AppendLine("===================================");
+            sb.AppendLine($"PASSENGER:   {boardingPass.PassengerName?.ToUpper()}");
+            sb.AppendLine($"FLIGHT:      {boardingPass.FlightNumber}");
+            sb.AppendLine($"FROM:        {boardingPass.DepartureCity}");
+            sb.AppendLine($"TO:          {boardingPass.ArrivalCity}");
+            sb.AppendLine("-----------------------------------");
+            sb.AppendLine($"DEPARTURE:   {boardingPass.DepartureTime:dd MMM yyyy HH:mm}"); // Example format
+            sb.AppendLine($"BOARDING:    {boardingPass.BoardingTime:HH:mm}");           // Example format
+            sb.AppendLine($"SEAT:        {boardingPass.SeatNumber}");
+            sb.AppendLine("===================================");
+            sb.AppendLine("Have a pleasant flight!");
+
+            // Display in a MessageBox
+            // The MessageBox will use the form's default font (Miracode if set on Form1)
+            MessageBox.Show(sb.ToString(), "Boarding Pass Issued", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AddLogMessage($"Boarding pass displayed for: {boardingPass.PassengerName}");
+        }
+
 
         // ShowBoardingPass method is REMOVED
 
@@ -367,6 +402,7 @@ namespace FlightRegistration.WinFormsClient
 
         }
     }
+
 
     public class NaturalStringComparer : IComparer<string>
     {

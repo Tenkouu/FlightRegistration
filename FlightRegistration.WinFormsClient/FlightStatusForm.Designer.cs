@@ -35,8 +35,8 @@ namespace FlightRegistration.WinFormsClient
             lblLoadedFlightNumberValue = new Label();
             lblLoadedFlightNumberStatic = new Label();
             grpUpdateStatusControls = new GroupBox();
-            cmbNewStatus = new ComboBox();
             lblSelectNewStatus = new Label();
+            cmbNewStatus = new ComboBox();
             btnUpdateStatusAction = new Button();
             btnFSFClose = new Button();
             grpLoadedFlightInfo.SuspendLayout();
@@ -68,12 +68,12 @@ namespace FlightRegistration.WinFormsClient
             // btnSearchFlight
             // 
             btnSearchFlight.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSearchFlight.BackColor = Color.DarkCyan;
+            btnSearchFlight.BackColor = Color.FromArgb(241, 207, 71);
             btnSearchFlight.FlatAppearance.BorderColor = Color.FromArgb(238, 206, 89);
             btnSearchFlight.FlatAppearance.BorderSize = 0;
             btnSearchFlight.FlatStyle = FlatStyle.Flat;
             btnSearchFlight.Font = new Font("Miracode", 10F, FontStyle.Bold);
-            btnSearchFlight.ForeColor = Color.White;
+            btnSearchFlight.ForeColor = Color.FromArgb(42, 45, 46);
             btnSearchFlight.Location = new Point(323, 22);
             btnSearchFlight.Name = "btnSearchFlight";
             btnSearchFlight.Size = new Size(150, 32);
@@ -242,6 +242,17 @@ namespace FlightRegistration.WinFormsClient
             grpUpdateStatusControls.TabStop = false;
             grpUpdateStatusControls.Text = "SELECT NEW STATUS";
             // 
+            // lblSelectNewStatus
+            // 
+            lblSelectNewStatus.AutoSize = true;
+            lblSelectNewStatus.Font = new Font("Miracode", 9.75F);
+            lblSelectNewStatus.ForeColor = Color.FromArgb(238, 206, 89);
+            lblSelectNewStatus.Location = new Point(15, 30);
+            lblSelectNewStatus.Name = "lblSelectNewStatus";
+            lblSelectNewStatus.Size = new Size(131, 24);
+            lblSelectNewStatus.TabIndex = 1;
+            lblSelectNewStatus.Text = "New Status:";
+            // 
             // cmbNewStatus
             // 
             cmbNewStatus.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
@@ -255,19 +266,6 @@ namespace FlightRegistration.WinFormsClient
             cmbNewStatus.Name = "cmbNewStatus";
             cmbNewStatus.Size = new Size(281, 31);
             cmbNewStatus.TabIndex = 0;
-            // 
-            // lblSelectNewStatus
-            // 
-            lblSelectNewStatus.AutoSize = true;
-            lblSelectNewStatus.Font = new Font("Miracode", 9.75F);
-            lblSelectNewStatus.Location = new Point(15, 30);
-            lblSelectNewStatus.BackColor = Color.FromArgb(42, 45, 46);
-            lblSelectNewStatus.Name = "lblSelectNewStatus";
-            lblSelectNewStatus.ForeColor = Color.FromArgb(238, 206, 89);
-            lblSelectNewStatus.FlatStyle = FlatStyle.Flat;
-            lblSelectNewStatus.Size = new Size(131, 24);
-            lblSelectNewStatus.TabIndex = 1;
-            lblSelectNewStatus.Text = "New Status:";
             // 
             // btnUpdateStatusAction
             // 

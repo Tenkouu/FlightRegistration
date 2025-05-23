@@ -20,4 +20,8 @@
     <ProjectReference Include="..\FlightRegistration.Services\FlightRegistration.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
