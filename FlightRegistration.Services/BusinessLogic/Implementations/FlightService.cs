@@ -69,6 +69,7 @@ namespace FlightRegistration.Services.BusinessLogic.Implementations
                     Id = s.Id,
                     SeatNumber = s.SeatNumber,
                     IsReserved = s.IsReserved,
+                    FlightId = s.FlightId,
                 }).ToList()
             };
         }
